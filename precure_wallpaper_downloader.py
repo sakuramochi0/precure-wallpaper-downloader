@@ -10,7 +10,7 @@ def toei():
     '''東映アニメーションのページから壁紙をダウンロードする'''
     
     # init
-    img_paths = []
+    img_sources = []
     
     # 壁紙ページを読み込み
     url_base = 'http://www.toei-anim.co.jp/tv/precure/special/'
@@ -33,17 +33,17 @@ def toei():
                 print('Downloaded:', filename)
             # tumblrに投稿する画像リストにファイル名を追加
             if '1920' in filename:
-                img_paths.append(filename)
+                img_sources.append(img_url)
 
     # tumblrに投稿する
-    if img_paths:
-        tumblr_post(img_paths, website='Toei Animation', source_url=url_base)
+    if img_sources:
+        tumblr_post(img_sources, website='Toei Animation', source_url=url_base)
 
 def asahi():
     '''朝日放送のページから壁紙をダウンロードする'''
     
     # init
-    img_paths = []
+    img_sources = []
     
     # 壁紙ページを読み込み
     url_base = 'http://asahi.co.jp/precure/princess/enjoyment/'
@@ -62,13 +62,13 @@ def asahi():
                 print('Downloaded:', filename)
             # tumblrに投稿する画像リストにファイル名を追加
             if '1920' in filename:
-                img_paths.append(filename)
+                img_sources.append(img_url)
 
     # tumblrに投稿する
-    if img_paths:
-        tumblr_post(img_paths, website='Asahi Broadcasting Corporation', source_url=url_base)
+    if img_sources:
+        tumblr_post(img_sources, website='Asahi Broadcasting Corporation', source_url=url_base)
             
-def tumblr_post(img_paths, website, source_url):
+def tumblr_post(img_sources, website, source_url):
 
     # init
     with open('../.credentials') as f:
@@ -80,14 +80,11 @@ def tumblr_post(img_paths, website, source_url):
     params = dict(
         type='photo',
         source_url=source_url,
-        state='draft',
         caption='Go! Princess Precure Wallpaper for {month} on the website of {website}'.format(month=datetime.date.today().strftime('%B'), website=website),
-        tags='precure,go princess precure'
+        tags='precure,go princess precure',
+        source=img_sources[0],
     )
-
-    # パラメータにアップロードする画像を設定
-    for i, img_path in enumerate(img_paths, 1):
-        params['data[{}]'.format(i)] = open(img_path, 'rb')
+    print(params)
 
     # 以上のパラメータで投稿
     post = t.post('post', blog_url=blog_url, params=params)
